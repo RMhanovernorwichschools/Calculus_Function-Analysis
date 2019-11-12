@@ -1,42 +1,12 @@
 import math
 
 class Function:
-    def __init__(self, pieces):
-         self.pieces=pieces
+    def __init__(self, string):
+         self.eq=string
     
     def perform(self, num):
-        parts=[]
-        for x in self.pieces:
-            check_for_mult = []
-            check_for_div = []
-            check_paren=0
-            for y in range(len(x)):
-                if x[y]=='*' and check_paren<1:
-                    check_for_mult.append(y)
-                elif x[y]=='/' and check_paren<1:
-                    check_for_div.append(y)
-                elif x[y]=='(':
-                    check_paren+=1
-                elif x[y]==')':
-                    check_paren-=1
-            if check_for_mult==[] and check_for_div==[]:
-                part=individual_perform(x)(num)
-            elif check_for_mult!=[] and check_for_div==[]:
-                sectors = x.split('*')
-                p1=individual_perform(sectors[0])(num)
-                for z in sectors[1:]:
-                    p2=individual_perform(z)(num)
-                    p1*=p2
-                part=p1
-            elif check_for_div!=[] and check_for_mult==[]:
-                sectors = x.split('/')
-                p1=individual_perform(sectors[0])(num)
-                for z in sectors[1:]:
-                    p2=individual_perform(z)(num)
-                    p1/=p2
-                part=p1
-            parts.append(part)
-        return sum(parts)
+        return individual_perform(self.eq)(num)
+            
 
 def individual_perform(equ):
     if all_in_paren(equ):
@@ -44,25 +14,25 @@ def individual_perform(equ):
     elif int_checker(equ)==True:
         def ans(x):
             return eval(equ)
-    elif find_loci(equ, '+'):
+    elif find_loci(equ, '+')!=False:
         sym_loci=find_loci(equ,'+')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
             return individual_perform(pre)(x)+individual_perform(post)(x)
-    elif find_loci(equ, '-'):
+    elif find_loci(equ, '-')!=False:
         sym_loci=find_loci(equ,'-')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
             return individual_perform(pre)(x)-individual_perform(post)(x)
-    elif find_loci(equ, '*'):
+    elif find_loci(equ, '*')!=False:
         sym_loci=find_loci(equ,'*')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
             return individual_perform(pre)(x)*individual_perform(post)(x)
-    elif find_loci(equ, '/'):
+    elif find_loci(equ, '/')!=False:
         sym_loci=find_loci(equ,'/')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
@@ -109,6 +79,131 @@ def individual_perform(equ):
     elif equ=='pi':
         def ans(x):
             return math.pi
+    elif equ[:3]=='asin':
+        contents=equ[3:]
+        def ans(x):
+            return math.asin(individual_perform(contents)(x))
+    elif equ[:3]=='acos':
+        contents=equ[3:]
+        def ans(x):
+            return math.acos(individual_perform(contents)(x))
+    elif equ[:3]=='atan':
+        contents=equ[3:]
+        def ans(x):
+            return math.atan(individual_perform(contents)(x))
+    elif equ[:3]=='acsc':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.asin(individual_perform(contents)(x))
+    elif equ[:3]=='asec':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.acos(individual_perform(contents)(x))
+    elif equ[:3]=='acot':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.atan(individual_perform(contents)(x))
+    else:
+        def ans(x):
+            return x
+    return ans
+
+def individual_deriv(equ):
+    if all_in_paren(equ):
+        return individual_deriv(equ[1:-1])
+    elif int_checker(equ)==True:
+        def ans(x):
+            return 0.0
+    elif find_loci(equ, '+')!=False:
+        sym_loci=find_loci(equ,'+')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return individual_deriv(pre)(x)+individual_deriv(post)(x)
+    elif find_loci(equ, '-')!=False:
+        sym_loci=find_loci(equ,'-')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return individual_deriv(pre)(x)-individual_deriv(post)(x)
+    elif find_loci(equ, '*')!=False:
+        sym_loci=find_loci(equ,'*')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return (individual_perform(pre)(x)*individual_deriv(post)(x))+(individual_deriv(pre)(x)*individual_perform(post)(x))
+    elif find_loci(equ, '/')!=False:
+        sym_loci=find_loci(equ,'/')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))/((individual_perform(post)(x))**2)
+    #NO WORK DONE BEYOND THIS POINT
+    elif find_loci(equ,'^')!=False:
+        sym_loci=find_loci(equ, '^')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return individual_perform(pre)(x)**individual_perform(post)(x)
+    elif equ[:3]=='sin':
+        contents=equ[3:]
+        def ans(x):
+            return math.sin(individual_perform(contents)(x))
+    elif equ[:3]=='cos':
+        contents=equ[3:]
+        def ans(x):
+            return math.cos(individual_perform(contents)(x))
+    elif equ[:3]=='tan':
+        contents=equ[3:]
+        def ans(x):
+            return math.tan(individual_perform(contents)(x))
+    elif equ[:3]=='csc':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.sin(individual_perform(contents)(x))
+    elif equ[:3]=='sec':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.cos(individual_perform(contents)(x))
+    elif equ[:3]=='cot':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.tan(individual_perform(contents)(x))
+    elif equ[:3]=='log':
+        end=find_loci(equ,'_')
+        base=equ[3:end]
+        def ans(x):
+            return math.log(x)/math.log(base)
+    elif equ=='e':
+        def ans(x):
+            return math.e
+    elif equ=='pi':
+        def ans(x):
+            return math.pi
+    elif equ[:3]=='asin':
+        contents=equ[3:]
+        def ans(x):
+            return math.asin(individual_perform(contents)(x))
+    elif equ[:3]=='acos':
+        contents=equ[3:]
+        def ans(x):
+            return math.acos(individual_perform(contents)(x))
+    elif equ[:3]=='atan':
+        contents=equ[3:]
+        def ans(x):
+            return math.atan(individual_perform(contents)(x))
+    elif equ[:3]=='acsc':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.asin(individual_perform(contents)(x))
+    elif equ[:3]=='asec':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.acos(individual_perform(contents)(x))
+    elif equ[:3]=='acot':
+        contents=equ[3:]
+        def ans(x):
+            return 1/math.atan(individual_perform(contents)(x))
     else:
         def ans(x):
             return x
@@ -168,5 +263,5 @@ func_str=filter(func_str, [' '])
 interval_str = input("Input closed interval in format [a,b]: ")
 interval_str=filter(interval_str, [' '])
 
-func_1=Function([func_str])
+func_1=Function(func_str)
 print(func_1.perform(1))
