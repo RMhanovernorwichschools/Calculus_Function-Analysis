@@ -37,6 +37,12 @@ def individual_perform(equ):
     if int_checker(equ)==True:
         def ans(x):
             return eval(equ)
+    elif '^' in set(equ):
+        sym_loci=find_loci(equ, '^')
+        pre= equ[:sym_loci]
+        post= equ[sym_loci+1:]
+        def ans(x):
+            return individual_perform(pre)(x)**individual_perform(post)(x)
     else:
         def ans(x):
             return x
@@ -52,27 +58,24 @@ def filter(inp, bads):
 def int_checker(string):
     ans=True
     for x in string:
-        if not(x in set(['1','2','3','4','5','6','7','8','9','0','.',','])):
+        if not(x in set(['1','2','3','4','5','6','7','8','9','0','.',',','-'])):
             ans=False
     return ans
+def find_loci(string, sym):
+    for x in range(len(string)):
+        if string[x]==sym:
+            return x
 
 def complex_func_reader(string):
-    pieces={}
-    split_loci_pos=[-1]
-    split_loci_neg=[]
+    pieces=[]
+    split_loci=[-1]
     for x in range(len(string)):
         if string[x]=='+':
-            split_loci_pos.append(x)
-        elif string[x]=='-':
-            split_loci_neg.append(x)
-    split_loci=sorted(split_loci_pos+split_loci_neg)
+            split_loci.append(x)
     split_loci.append(len(string))
     for x in range(len(split_loci)-1):
         piece=string[split_loci[x]+1:split_loci[x+1]]
-        if string[split_loci[x]]=='-':
-            pieces[piece]='neg'
-        else:
-            pieces[piece]='pos'
+        pieces.append(piece)
     return pieces
     
 #def first_derivative(func):
