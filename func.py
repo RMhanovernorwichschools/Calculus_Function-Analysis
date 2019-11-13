@@ -429,7 +429,10 @@ def all_in_paren(string):
         pieces.append(piece)
     return pieces'''
     
-#def first_derivative(func):
+def NUMERICALderiv(func, num):
+    first= func(num+0.00000000001)
+    second= func(num-0.00000000001)
+    return (first-second)/0.00000000002
     
     
 func_str = input ("Input the function: ")
@@ -444,19 +447,43 @@ steps=eval(steps_str)
 
 progression_dist = (interval_end-interval_start)/(steps)
 included_values=[]
-for x in range(steps):
+for x in range(steps+1):
     step=interval_start+progression_dist*x
     included_values.append(step)
 
 func_1=Function(func_str)
 deriv_1=individual_deriv(func_str)
 
+
+
 values={}
+inc_dec={}
+cup_frown={}
 for x in included_values:
     a, b = (func_1.perform(x), deriv_1(x))
-    values[x]=(a,b)
-    
+    c= NUMERICALderiv (deriv_1, x)
+    values[x]=(a,b,c)
+
 print(values)
+for x in included_values[:-1]:
+    if (values[x][1]>0 and values[x+progression_dist][1]<0):
+        inc_dec[x+progression_dist/2]='locMAX'
+    elif (values[x][1]==0 and values[x+progression_dist][1]<0 and deriv_1(x-0.01)>0):
+        inc_dec[x]='locMAX'
+    elif (x==interval_start and values[x+progression_dist][0]<values[x][0]):
+        inc_dec[interval_start]='locMAX'
+    elif (x==interval_end-progression_dist and values[x+progression_dist][0]>values[x][0]):
+        inc_dec[interval_end]='locMAX'
+    elif (values[x][1]<0 and values[x+progression_dist][1]>0):
+        inc_dec[x+progression_dist/2]='locMIN'
+    elif (values[x][1]==0 and values[x+progression_dist][1]>0 and deriv_1(x-0.01)<0):
+        inc_dec[x]='locMIN'
+    elif (x==interval_start and values[x+progression_dist][0]>values[x][0]):
+        inc_dec[interval_start]='locMIN'
+    elif (x==interval_end-progression_dist and values[x+progression_dist][0]<values[x][0]):
+        inc_dec[interval_end]='locMIN'
+
+print(inc_dec)
 
 print('Discontinuous at',disconts)
 print('Nondifferentiable at',nondifferens)
