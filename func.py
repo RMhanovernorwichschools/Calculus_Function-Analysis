@@ -6,6 +6,9 @@ class Function:
     
     def perform(self, num):
         return individual_perform(self.eq)(num)
+        
+disconts=[]
+nondifferens=[]
             
 
 def individual_perform(equ):
@@ -37,7 +40,13 @@ def individual_perform(equ):
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
-            return individual_perform(pre)(x)/individual_perform(post)(x)
+            bottom=individual_perform(post)(x)
+            if bottom==0:
+                disconts.append(x)
+                print('Discontinuity found: x =',x)
+                return 0.0
+            else:
+                return individual_perform(pre)(x)/bottom
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
@@ -73,7 +82,12 @@ def individual_perform(equ):
         base=equ[3:end]
         contents=equ[end+1:]
         def ans(x):
-            return math.log(individual_perform(contents)(x))/math.log(base)
+            if (individual_perform(contents)(x))<0:
+                disconts.append(x)
+                print('Discontinuity found: x =', x)
+                return 0.0
+            else:
+                return math.log(individual_perform(contents)(x))/math.log(individual_perform(base)(x))
     elif equ=='e':
         def ans(x):
             return math.e
@@ -83,10 +97,18 @@ def individual_perform(equ):
     elif equ[:3]=='asin':
         contents=equ[3:]
         def ans(x):
+            if (individual_perform(contents)(x))<(math.pi/(-2)) or (individual_perform(contents)(x))>(math.pi/2):
+                disconts.append(x)
+                print('Discontinuity found: x =', x)
+                return 0.0
             return math.asin(individual_perform(contents)(x))
     elif equ[:3]=='acos':
         contents=equ[3:]
         def ans(x):
+            if (individual_perform(contents)(x))<0 or (individual_perform(contents)(x))>math.pi:
+                disconts.append(x)
+                print('Discontinuity found: x =', x)
+                return 0.0
             return math.acos(individual_perform(contents)(x))
     elif equ[:3]=='atan':
         contents=equ[3:]
@@ -95,10 +117,18 @@ def individual_perform(equ):
     elif equ[:3]=='acsc':
         contents=equ[3:]
         def ans(x):
+            if (individual_perform(contents)(x))>(math.pi/(-2)) and (individual_perform(contents)(x))<(math.pi/2):
+                disconts.append(x)
+                print('Discontinuity found: x =', x)
+                return 0.0
             return 1/math.asin(individual_perform(contents)(x))
     elif equ[:3]=='asec':
         contents=equ[3:]
         def ans(x):
+            if (individual_perform(contents)(x))>0 and (individual_perform(contents)(x))<math.pi:
+                disconts.append(x)
+                print('Discontinuity found: x =', x)
+                return 0.0
             return 1/math.acos(individual_perform(contents)(x))
     elif equ[:3]=='acot':
         contents=equ[3:]
