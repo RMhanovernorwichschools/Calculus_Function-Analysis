@@ -64,18 +64,34 @@ def individual_perform(equ):
     elif equ[:3]=='tan':
         contents=equ[3:]
         def ans(x):
+            if math.sin(individual_perform(contents)(x))==0:
+                disconts.append(x)
+                print('Discontinuity found: x =',x)
+                return 0.0
             return math.tan(individual_perform(contents)(x))
     elif equ[:3]=='csc':
         contents=equ[3:]
         def ans(x):
+            if math.sin(individual_perform(contents)(x))==0:
+                disconts.append(x)
+                print('Discontinuity found: x =',x)
+                return 0.0
             return 1/math.sin(individual_perform(contents)(x))
     elif equ[:3]=='sec':
         contents=equ[3:]
         def ans(x):
+            if math.cos(individual_perform(contents)(x))==0:
+                disconts.append(x)
+                print('Discontinuity found: x =',x)
+                return 0.0
             return 1/math.cos(individual_perform(contents)(x))
     elif equ[:3]=='cot':
         contents=equ[3:]
         def ans(x):
+            if math.cos(individual_perform(contents)(x))==0:
+                disconts.append(x)
+                print('Discontinuity found: x =',x)
+                return 0.0
             return 1/math.tan(individual_perform(contents)(x))
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
@@ -94,44 +110,44 @@ def individual_perform(equ):
     elif equ=='pi':
         def ans(x):
             return math.pi
-    elif equ[:3]=='asin':
-        contents=equ[3:]
+    elif equ[:4]=='asin':
+        contents=equ[4:]
         def ans(x):
             if (individual_perform(contents)(x))<(math.pi/(-2)) or (individual_perform(contents)(x))>(math.pi/2):
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
                 return 0.0
             return math.asin(individual_perform(contents)(x))
-    elif equ[:3]=='acos':
-        contents=equ[3:]
+    elif equ[:4]=='acos':
+        contents=equ[4:]
         def ans(x):
             if (individual_perform(contents)(x))<0 or (individual_perform(contents)(x))>math.pi:
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
                 return 0.0
             return math.acos(individual_perform(contents)(x))
-    elif equ[:3]=='atan':
-        contents=equ[3:]
+    elif equ[:4]=='atan':
+        contents=equ[4:]
         def ans(x):
             return math.atan(individual_perform(contents)(x))
-    elif equ[:3]=='acsc':
-        contents=equ[3:]
+    elif equ[:4]=='acsc':
+        contents=equ[4:]
         def ans(x):
             if (individual_perform(contents)(x))>(math.pi/(-2)) and (individual_perform(contents)(x))<(math.pi/2):
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
                 return 0.0
             return 1/math.asin(individual_perform(contents)(x))
-    elif equ[:3]=='asec':
-        contents=equ[3:]
+    elif equ[:4]=='asec':
+        contents=equ[4:]
         def ans(x):
             if (individual_perform(contents)(x))>0 and (individual_perform(contents)(x))<math.pi:
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
                 return 0.0
             return 1/math.acos(individual_perform(contents)(x))
-    elif equ[:3]=='acot':
-        contents=equ[3:]
+    elif equ[:4]=='acot':
+        contents=equ[4:]
         def ans(x):
             return 1/math.atan(individual_perform(contents)(x))
     else:
@@ -168,16 +184,29 @@ def individual_deriv(equ):
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
-            return ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))/((individual_perform(post)(x))**2)
+            bottom= (individual_perform(post)(x))**2
+            if bottom==0:
+                nondifferens.append(x)
+                print('Nondifferentiability found: x =',x)
+                return 0.0
+            return ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))/bottom
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         if not('x' in set(post)):
             def ans(x):
+                if (individual_perform(post)(x)-1)<0 and individual_perform(pre)(x)==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
         else:
             def ans(x):
+                if (individual_perform(post)(x)-1)<0 and individual_perform(pre)(x)==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return math.log(individual_perform(pre)(x))*individual_deriv(post)(x)*individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
     elif equ[:3]=='sin':
         contents=equ[3:]
@@ -199,33 +228,65 @@ def individual_deriv(equ):
         contents=equ[3:]
         if not('x' in set(contents)):
             def ans(x):
+                if math.cos(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return 1/((math.cos(individual_perform(contents)(x)))**2)
         else:
             def ans(x):
+                if math.cos(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*1/((math.cos(individual_perform(contents)(x)))**2)
     elif equ[:3]=='csc':
         contents=equ[3:]
         if not('x' in set(contents)):
             def ans(x):
+                if math.sin(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return (-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
         else:
             def ans(x):
+                if math.sin(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*(-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='sec':
         contents=equ[3:]
         if not('x' in set(contents)):
             def ans(x):
+                if math.cos(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return (math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
         else:
             def ans(x):
+                if math.cos(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*(math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
     elif equ[:3]=='cot':
         contents=equ[3:]
         if not('x' in set(contents)):
             def ans(x):
+                if math.sin(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return (-1)*(1/math.sin(individual_perform(contents)(x))**2)
         else:
             def ans(x):
+                if math.sin(individual_perform(contents)(x))==0:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*(-1)*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
@@ -238,23 +299,39 @@ def individual_deriv(equ):
             def ans(x):
                 return 1/(individual_perform(contents)(x)*math.log(individual_perform(base)(x)))
     elif equ[:4]=='asin':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
+                if individual_peform(contents)(x)==1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*1/math.sqrt(1-(individual_perform(contents)(x))**2)
         else:
             def ans(x):
+                if individual_peform(contents)(x)==1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return 1/math.sqrt(1-(individual_perform(contents)(x))**2)
     elif equ[:4]=='acos':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
+                if individual_peform(contents)(x)==1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*(-1)/math.sqrt(1-(individual_perform(contents)(x))**2)
         else:
             def ans(x):
+                if individual_peform(contents)(x)==1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return (-1)/math.sqrt(1-(individual_perform(contents)(x))**2)
     elif equ[:4]=='atan':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
                 return individual_deriv(contents)(x)*1/((individual_perform(contents)(x))**2+1)
@@ -262,23 +339,39 @@ def individual_deriv(equ):
             def ans(x):
                 1/((individual_perform(contents)(x))**2+1)
     elif equ[:4]=='acsc':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
+                if individual_peform(contents)(x)==1 or individual_peform(contents)(x)==-1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*(-1)/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
         else:
             def ans(x):
+                if individual_peform(contents)(x)==1 or individual_peform(contents)(x)==-1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return (-1)/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
     elif equ[:4]=='asec':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
+                if individual_peform(contents)(x)==1 or individual_peform(contents)(x)==-1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return individual_deriv(contents)(x)*1/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
         else:
             def ans(x):
+                if individual_peform(contents)(x)==1 or individual_peform(contents)(x)==-1:
+                    nondifferens.append(x)
+                    print('Nondifferentiability found: x =',x)
+                    return 0.0
                 return 1/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
     elif equ[:4]=='acot':
-        contents=equ[3:]
+        contents=equ[4:]
         if 'x' in set(contents):
             def ans(x):
                 return individual_deriv(contents)(x)*(-1)/((individual_perform(contents)(x))**2+1)
@@ -343,7 +436,27 @@ func_str = input ("Input the function: ")
 func_str=filter(func_str, [' '])
 interval_str = input("Input closed interval in format [a,b]: ")
 interval_str=filter(interval_str, [' '])
+first, comma, final = (find_loci(interval_str, '['), find_loci(interval_str, ','), find_loci(interval_str, ']'))
+interval_start=eval(interval_str[first+1:comma])
+interval_end=eval(interval_str[comma+1:final])
+steps_str = input("Input numerical specificity (number of steps the program will take across the interval): ")
+steps=eval(steps_str)
+
+progression_dist = (interval_end-interval_start)/(steps)
+included_values=[]
+for x in range(steps):
+    step=interval_start+progression_dist*x
+    included_values.append(step)
 
 func_1=Function(func_str)
-print(func_1.perform(1))
-print(individual_deriv(func_str)(1))
+deriv_1=individual_deriv(func_str)
+
+values={}
+for x in included_values:
+    a, b = (func_1.perform(x), deriv_1(x))
+    values[x]=(a,b)
+    
+print(values)
+
+print('Discontinuous at',disconts)
+print('Nondifferentiable at',nondifferens)
