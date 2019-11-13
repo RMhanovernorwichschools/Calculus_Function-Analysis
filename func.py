@@ -71,8 +71,9 @@ def individual_perform(equ):
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
         base=equ[3:end]
+        contents=equ[end+1:]
         def ans(x):
-            return math.log(x)/math.log(base)
+            return math.log(individual_perform(contents)(x))/math.log(base)
     elif equ=='e':
         def ans(x):
             return math.e
@@ -142,12 +143,12 @@ def individual_deriv(equ):
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
-        if int_checker(post):
+        if not('x' in set(post)):
             def ans(x):
                 return individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
         else:
             def ans(x):
-                return individual_deriv(post)(x)*individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
+                return math.log(individual_perform(pre)(x))*individual_deriv(post)(x)*individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
     elif equ[:3]=='sin':
         contents=equ[3:]
         if not('x' in set(contents)):
@@ -164,58 +165,96 @@ def individual_deriv(equ):
         else:
             def ans(x):
                 return individual_deriv(contents)(x)*-1*math.sin(individual_perform(contents)(x))
-    #NO WORK BEYOND THIS POINT
     elif equ[:3]=='tan':
         contents=equ[3:]
-        def ans(x):
-            return math.tan(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return 1/((math.cos(individual_perform(contents)(x)))**2)
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*1/((math.cos(individual_perform(contents)(x)))**2)
     elif equ[:3]=='csc':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.sin(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return (-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*(-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='sec':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.cos(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return (math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*(math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
     elif equ[:3]=='cot':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.tan(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return (-1)*(1/math.sin(individual_perform(contents)(x))**2)
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*(-1)*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
         base=equ[3:end]
-        def ans(x):
-            return math.log(x)/math.log(base)
-    elif equ=='e':
-        def ans(x):
-            return math.e
-    elif equ=='pi':
-        def ans(x):
-            return math.pi
-    elif equ[:3]=='asin':
+        contents=equ[end+1:]
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*1/(individual_perform(contents)(x)*math.log(individual_perform(base)(x)))
+        else:
+            def ans(x):
+                return 1/(individual_perform(contents)(x)*math.log(individual_perform(base)(x)))
+    elif equ[:4]=='asin':
         contents=equ[3:]
-        def ans(x):
-            return math.asin(individual_perform(contents)(x))
-    elif equ[:3]=='acos':
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*1/math.sqrt(1-(individual_perform(contents)(x))**2)
+        else:
+            def ans(x):
+                return 1/math.sqrt(1-(individual_perform(contents)(x))**2)
+    elif equ[:4]=='acos':
         contents=equ[3:]
-        def ans(x):
-            return math.acos(individual_perform(contents)(x))
-    elif equ[:3]=='atan':
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*(-1)/math.sqrt(1-(individual_perform(contents)(x))**2)
+        else:
+            def ans(x):
+                return (-1)/math.sqrt(1-(individual_perform(contents)(x))**2)
+    elif equ[:4]=='atan':
         contents=equ[3:]
-        def ans(x):
-            return math.atan(individual_perform(contents)(x))
-    elif equ[:3]=='acsc':
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*1/((individual_perform(contents)(x))**2+1)
+        else:
+            def ans(x):
+                1/((individual_perform(contents)(x))**2+1)
+    elif equ[:4]=='acsc':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.asin(individual_perform(contents)(x))
-    elif equ[:3]=='asec':
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*(-1)/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
+        else:
+            def ans(x):
+                return (-1)/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
+    elif equ[:4]=='asec':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.acos(individual_perform(contents)(x))
-    elif equ[:3]=='acot':
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*1/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
+        else:
+            def ans(x):
+                return 1/(math.fabs(individual_perform(contents)(x))*math.sqrt((individual_perform(contents)(x))**2-1))
+    elif equ[:4]=='acot':
         contents=equ[3:]
-        def ans(x):
-            return 1/math.atan(individual_perform(contents)(x))
+        if 'x' in set(contents):
+            def ans(x):
+                return individual_deriv(contents)(x)*(-1)/((individual_perform(contents)(x))**2+1)
+        else:
+            def ans(x):
+                (-1)/((individual_perform(contents)(x))**2+1)
     else:
         def ans(x):
             return x
