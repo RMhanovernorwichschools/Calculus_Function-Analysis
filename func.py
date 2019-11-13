@@ -448,14 +448,12 @@ steps=eval(steps_str)
 progression_dist = (interval_end-interval_start)/(steps)
 included_values=[]
 for x in range(steps):
-    step=interval_start+progression_dist*x
+    step=round(interval_start+progression_dist*x,8)
     included_values.append(step)
 included_values.append(interval_end)
 
 func_1=Function(func_str)
 deriv_1=individual_deriv(func_str)
-
-
 
 values={}
 inc_dec={}
@@ -466,21 +464,22 @@ for x in included_values:
     values[x]=(a,b,c)
 
 for x in included_values[:-1]:
-    if (values[x][1]>0 and values[x+progression_dist][1]<0):
+    next=round(x+progression_dist,8)
+    if (values[x][1]>0 and values[next][1]<0):
         inc_dec[x+progression_dist/2]='locMAX'
-    elif (values[x][1]==0 and values[x+progression_dist][1]<0 and deriv_1(x-0.01)>0):
+    elif (values[x][1]==0 and values[next][1]<0 and deriv_1(x-0.01)>0):
         inc_dec[x]='locMAX'
-    elif (x==interval_start and values[x+progression_dist][0]<values[x][0]):
+    elif (x==interval_start and values[next][0]<values[x][0]):
         inc_dec[interval_start]='locMAX'
-    elif (x==interval_end-progression_dist and values[x+progression_dist][0]>values[x][0]):
+    elif (x==interval_end-progression_dist and values[next][0]>values[x][0]):
         inc_dec[interval_end]='locMAX'
-    elif (values[x][1]<0 and values[x+progression_dist][1]>0):
+    elif (values[x][1]<0 and values[next][1]>0):
         inc_dec[x+progression_dist/2]='locMIN'
-    elif (values[x][1]==0 and values[x+progression_dist][1]>0 and deriv_1(x-0.01)<0):
+    elif (values[x][1]==0 and values[next][1]>0 and deriv_1(x-0.01)<0):
         inc_dec[x]='locMIN'
-    elif (x==interval_start and values[x+progression_dist][0]>values[x][0]):
+    elif (x==interval_start and values[next][0]>values[x][0]):
         inc_dec[interval_start]='locMIN'
-    elif (x==interval_end-progression_dist and values[x+progression_dist][0]<values[x][0]):
+    elif (x==interval_end-progression_dist and values[next][0]<values[x][0]):
         inc_dec[interval_end]='locMIN'
 
 print(inc_dec)
