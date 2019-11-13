@@ -111,7 +111,7 @@ def individual_perform(equ):
 def individual_deriv(equ):
     if all_in_paren(equ):
         return individual_deriv(equ[1:-1])
-    elif int_checker(equ)==True:
+    elif int_checker(equ)==True or not('x' in set(equ)):
         def ans(x):
             return 0.0
     elif find_loci(equ, '+')!=False:
@@ -138,21 +138,33 @@ def individual_deriv(equ):
         post= equ[sym_loci+1:]
         def ans(x):
             return ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))/((individual_perform(post)(x))**2)
-    #NO WORK DONE BEYOND THIS POINT
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
-        def ans(x):
-            return individual_perform(pre)(x)**individual_perform(post)(x)
+        if int_checker(post):
+            def ans(x):
+                return individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
+        else:
+            def ans(x):
+                return individual_deriv(post)(x)*individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
     elif equ[:3]=='sin':
         contents=equ[3:]
-        def ans(x):
-            return math.sin(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return math.cos(individual_perform(contents)(x))
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*math.cos(individual_perform(contents)(x))
     elif equ[:3]=='cos':
         contents=equ[3:]
-        def ans(x):
-            return math.cos(individual_perform(contents)(x))
+        if not('x' in set(contents)):
+            def ans(x):
+                return -1*math.sin(individual_perform(contents)(x))
+        else:
+            def ans(x):
+                return individual_deriv(contents)(x)*-1*math.sin(individual_perform(contents)(x))
+    #NO WORK BEYOND THIS POINT
     elif equ[:3]=='tan':
         contents=equ[3:]
         def ans(x):
@@ -265,3 +277,4 @@ interval_str=filter(interval_str, [' '])
 
 func_1=Function(func_str)
 print(func_1.perform(1))
+print(individual_deriv(func_str)(1))
