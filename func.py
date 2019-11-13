@@ -447,9 +447,10 @@ steps=eval(steps_str)
 
 progression_dist = (interval_end-interval_start)/(steps)
 included_values=[]
-for x in range(steps+1):
+for x in range(steps):
     step=interval_start+progression_dist*x
     included_values.append(step)
+included_values.append(interval_end)
 
 func_1=Function(func_str)
 deriv_1=individual_deriv(func_str)
@@ -464,7 +465,6 @@ for x in included_values:
     c= NUMERICALderiv (deriv_1, x)
     values[x]=(a,b,c)
 
-print(values)
 for x in included_values[:-1]:
     if (values[x][1]>0 and values[x+progression_dist][1]<0):
         inc_dec[x+progression_dist/2]='locMAX'
