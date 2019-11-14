@@ -550,7 +550,20 @@ for x in intervals:
     else:
         intervals[x]+='_Lend'
         
-print(intervals)
+INCresp='Increasing at x = '
+DECresp='Decreasing at x = '
+for x in intervals:
+    if intervals[x]=='Inc_Lend':
+        INCresp+='['+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Inc_clos':
+        INCresp+='['+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Inc_open':
+        INCresp+='('+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Inc_Rend':
+        INCresp+='('+str(x[0])+', '+str(x[1])+'] U '
+
+print('')
+print(INCresp[:-3])
 
 print('Discontinuous at x =',disconts)
 print('Nondifferentiable at x =',nondifferens)
