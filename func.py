@@ -64,7 +64,7 @@ def individual_perform(equ):
     elif equ[:3]=='tan':
         contents=equ[3:]
         def ans(x):
-            if math.sin(individual_perform(contents)(x))==0:
+            if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
                 print('Discontinuity found: x =',x)
                 return 0.0
@@ -72,7 +72,7 @@ def individual_perform(equ):
     elif equ[:3]=='csc':
         contents=equ[3:]
         def ans(x):
-            if math.sin(individual_perform(contents)(x))==0:
+            if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
                 print('Discontinuity found: x =',x)
                 return 0.0
@@ -80,7 +80,7 @@ def individual_perform(equ):
     elif equ[:3]=='sec':
         contents=equ[3:]
         def ans(x):
-            if math.cos(individual_perform(contents)(x))==0:
+            if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
                 print('Discontinuity found: x =',x)
                 return 0.0
@@ -88,7 +88,7 @@ def individual_perform(equ):
     elif equ[:3]=='cot':
         contents=equ[3:]
         def ans(x):
-            if math.cos(individual_perform(contents)(x))==0:
+            if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
                 print('Discontinuity found: x =',x)
                 return 0.0
@@ -411,6 +411,11 @@ def all_in_paren(string):
         return True
     else:
         return False
+def near_zero(num, sensitivity):
+    if num>-1.0*10**(-sensitivity) and num<1.0*10**(-sensitivity):
+        return True
+    else:
+        return False
 
 '''def complex_func_reader(string):
     pieces=[]
@@ -481,8 +486,74 @@ for x in included_values[:-1]:
         inc_dec[interval_start]='locMIN'
     elif (x==interval_end-progression_dist and values[next][0]<values[x][0]):
         inc_dec[interval_end]='locMIN'
+        
+    if (values[x][2]>0 and values[next][2]<0):
+        cup_frown[x+progression_dist/2]='INF_pn'
+    elif (values[x][2]==0 and values[next][2]<0 and NUMERCIALderiv(deriv_1(x-0.01)>0)):
+        cup_frown[x]='INF_pn'
+    elif (x==interval_start and values[x][2]>0):
+        cup_frown[interval_start]='END_p'
+    elif (x==interval_end-progression_dist and values[next][2]>0):
+        cup_frown[interval_end]='END_p'
+    elif (values[x][2]<0 and values[next][2]>0):
+        cup_frown[x+progression_dist/2]='INF_np'
+    elif (values[x][2]==0 and values[next][2]>0 and deriv_1(x-0.01)<0):
+        cup_frown[x]='INF_np'
+    elif (x==interval_start and values[x][2]<0):
+        cup_frown[interval_start]='END_n'
+    elif (x==interval_end-progression_dist and values[next][2]<0):
+        cup_frown[interval_end]='END_n'
+
+inc_dec_details={}
+for x in inc_dec:
+    inc_dec_details[x]=func_1.perform(x)
+for x in included_values:
+    inc_dec_details[x]=func_1.perform(x)
+abs_max=inc_dec_details[max(inc_dec_details,key=inc_dec_details.get)]
+abs_min=inc_dec_details[min(inc_dec_details,key=inc_dec_details.get)]
+
+for x in inc_dec:
+    if func_1.perform(x)==abs_max:
+        inc_dec[x]='absMAX'
+    elif func_1.perform(x)==abs_min:
+        inc_dec[x]='absMIN'
+
+intervals={}
+INCstart=None
+DECstart=None
+INCend=None
+DECend=None
 
 print(inc_dec)
 
-print('Discontinuous at',disconts)
-print('Nondifferentiable at',nondifferens)
+for x in sorted(inc_dec):
+    if inc_dec[x][3:]=='MIN':
+        INCstart=x
+        DECend=x
+        if DECstart!=None:
+            intervals[(DECstart,DECend)]='Dec'
+            DECstart=None
+    elif inc_dec[x][3:]=='MAX':
+        INCend=x
+        DECstart=x
+        if INCstart!=None:
+            intervals[(INCstart,INCend)]='Inc'
+            INCstart=None
+
+for x in intervals:
+    if x[0] in set(disconts) and x[1] in set(disconts):
+        intervals[x]+='_open'
+    elif x[0] in set(disconts) and not(x[1] in set(disconts)):
+        intervals[x]+='_Rend'
+    elif not(x[0] in set(disconts) or x[1] in set(disconts)):
+        intervals[x]+='_clos'
+    else:
+        intervals[x]+='_Lend'
+        
+print(intervals)
+
+print('Discontinuous at x =',disconts)
+print('Nondifferentiable at x =',nondifferens)
+
+print('')
+print(values)
