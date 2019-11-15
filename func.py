@@ -388,7 +388,7 @@ def individual_deriv(equ):
                 (-1)/((individual_perform(contents)(x))**2+1)
     else:
         def ans(x):
-            return x
+            return 1.0
     return ans
 
 def filter(inp, bads):
@@ -448,14 +448,14 @@ def NUMERICALderiv(func, num):
     return (first-second)/0.00000000002
     
     
-func_str = input ("Input the function: ")
+func_str = input ("     Input the function: ")
 func_str=filter(func_str, [' '])
-interval_str = input("Input closed interval in format [a,b]: ")
+interval_str = input("     Input closed interval in format [a,b]: ")
 interval_str=filter(interval_str, [' '])
 first, comma, final = (find_loci(interval_str, '['), find_loci(interval_str, ','), find_loci(interval_str, ']'))
 interval_start=eval(interval_str[first+1:comma])
 interval_end=eval(interval_str[comma+1:final])
-steps_str = input("Input numerical specificity (number of steps the program will take across the interval): ")
+steps_str = input("     Input numerical specificity (number of steps the program will take across the interval): ")
 steps=eval(steps_str)
 
 progression_dist = (interval_end-interval_start)/(steps)
@@ -497,7 +497,7 @@ for x in included_values[:-1]:
         
     if (values[x][2]>0 and values[next][2]<0):
         cup_frown[x+progression_dist/2]='INF_pn'
-    elif (values[x][2]==0 and values[next][2]<0 and NUMERCIALderiv(deriv_1(x-0.01)>0)):
+    elif (values[x][2]==0 and values[next][2]<0 and NUMERICALderiv(deriv_1,(x-0.01))>0):
         cup_frown[x]='INF_pn'
     elif (x==interval_start and values[x][2]>0):
         cup_frown[interval_start]='END_p'
@@ -505,12 +505,19 @@ for x in included_values[:-1]:
         cup_frown[interval_end]='END_p'
     elif (values[x][2]<0 and values[next][2]>0):
         cup_frown[x+progression_dist/2]='INF_np'
-    elif (values[x][2]==0 and values[next][2]>0 and deriv_1(x-0.01)<0):
+    elif (values[x][2]==0 and values[next][2]>0 and NUMERICALderiv(deriv_1,(x-0.01))<0):
         cup_frown[x]='INF_np'
     elif (x==interval_start and values[x][2]<0):
         cup_frown[interval_start]='END_n'
     elif (x==interval_end-progression_dist and values[next][2]<0):
         cup_frown[interval_end]='END_n'
+
+#checking for disconts
+rems=[]
+for x in cup_frown:
+    func_1.perform(x)
+    if x in set(disconts):
+        rems.append(x)
 
 inc_dec_details={}
 for x in inc_dec:
@@ -531,6 +538,10 @@ INCstart=None
 DECstart=None
 INCend=None
 DECend=None
+
+for x in disconts:
+    inc_dec[x]='discont'
+
 for x in sorted(inc_dec):
     if inc_dec[x][3:]=='MIN':
         INCstart=x
@@ -544,6 +555,17 @@ for x in sorted(inc_dec):
         if INCstart!=None:
             intervals[(INCstart,INCend)]='Inc'
             INCstart=None
+    elif inc_dec[x]=='discont':
+        if INCstart!=None:
+            INCend=x
+            intervals[(INCstart,INCend)]='Inc'
+            INCstart=x
+            INCend=None
+        elif DECstart!=None:
+            DECend=x
+            intervals[(DECstart,DECend)]='Dec'
+            DECstart=x
+            DECend=None
 
 for x in intervals:
     if x[0] in set(disconts) and x[1] in set(disconts):
@@ -601,45 +623,55 @@ FROstart=None
 CUPend=None
 FROend=None
 
-print(cup_frown)
-
-for x in sorted(inc_dec):
-    if inc_dec[x][3:]=='MIN':
-        INCstart=x
-        DECend=x
-        if DECstart!=None:
-            intervals[(DECstart,DECend)]='Dec'
-            DECstart=None
-    elif inc_dec[x][3:]=='MAX':
-        INCend=x
-        DECstart=x
-        if INCstart!=None:
-            intervals[(INCstart,INCend)]='Inc'
-            INCstart=None
+INFresp='Points of Inflection at x = '
+interv_start=True
+for x in sorted(cup_frown):
+    if interv_start==True and cup_frown[x][0:3]=='END':
+        if cup_frown[x][4]=='n':
+            FROstart=x
+        elif cup_frown[x][4]=='p':
+            CUPstart=x
+        interv_start=False
+    elif cup_frown[x][0:3]=='END' and interv_start==False:
+        if FROstart!=None:
+            FROend=x
+            CFintervals[(FROstart,FROend)]='Down'
+        elif CUPstart!=None:
+            CUPend=x
+            CFintervals[(CUPstart,CUPend)]='Up'
+    else:
+        if not(x in set(rems)):
+            INFresp+=str(x)+', '
+        if FROstart!=None:
+            FROend=x
+            CFintervals[(FROstart,FROend)]='Down'
+            FROstart=None
+            FROend=None
+            CUPstart=x
+        elif CUPstart!=None:
+            CUPend=x
+            CFintervals[(CUPstart,CUPend)]='Up'
+            CUPstart=None
+            CUPend=None
+            FROstart=x
 
 CUPresp='Concave up at x = '
-FROresp='Concave down at x = ''''
-for x in intervals:
-    if intervals[x]=='Inc_Lend':
-        INCresp+='['+str(x[0])+', '+str(x[1])+') U '
-    elif intervals[x]=='Inc_clos':
-        INCresp+='['+str(x[0])+', '+str(x[1])+'] U '
-    elif intervals[x]=='Inc_open':
-        INCresp+='('+str(x[0])+', '+str(x[1])+') U '
-    elif intervals[x]=='Inc_Rend':
-        INCresp+='('+str(x[0])+', '+str(x[1])+'] U '
-    elif intervals[x]=='Dec_Lend':
-        DECresp+='['+str(x[0])+', '+str(x[1])+') U '
-    elif intervals[x]=='Dec_clos':
-        DECresp+='['+str(x[0])+', '+str(x[1])+'] U '
-    elif intervals[x]=='Dec_open':
-        DECresp+='('+str(x[0])+', '+str(x[1])+') U '
-    elif intervals[x]=='Dec_Rend':
-        DECresp+='('+str(x[0])+', '+str(x[1])+'] U '
+FROresp='Concave down at x = '
+for x in CFintervals:
+    if CFintervals[x]=='Up':
+        CUPresp+='('+str(x[0])+', '+str(x[1])+') U '
+    elif CFintervals[x]=='Down':
+        FROresp+='('+str(x[0])+', '+str(x[1])+') U '
+if CUPresp=='Concave up at x = ':
+    CUPresp='Never concave up...'
+if FROresp=='Concave down at x = ':
+    FROresp='Never concave down...'
+        
 if INCresp=='Increasing at x = ':
     INCresp='Never increasing on interval...'
 if DECresp=='Decreasing at x = ':
     DECresp='Never decreasing on interval...'
+
 EXTMAXresp='Extrema: Maximums at x = '
 EXTMINresp='         Minimums at x = '
 for x in inc_dec:
@@ -655,15 +687,23 @@ for x in inc_dec:
             EXTMINresp+='(absolute), '
         else:
             EXTMINresp+=', '
-'''
+
+if INFresp=='Points of Inflection at x = ':
+    INFresp='No points of inflection..'
+
 print('')
 print(INCresp[:-3])
 print(DECresp[:-3])
 print(EXTMAXresp[:-2])
 print(EXTMINresp[:-2])
+print('')
+print(CUPresp[:-3])
+print(FROresp[:-3])
+print(INFresp[:-2])
 
-#check=eval(input('Final thing? '))
-#print(check)
+
+check=eval(input('Final thing? '))
+print(check)
 
 print('')
 print('Discontinuous at x =',disconts)
