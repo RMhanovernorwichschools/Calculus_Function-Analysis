@@ -40,13 +40,17 @@ def individual_perform(equ):
         pre= equ[:sym_loci]
         post= equ[sym_loci+1:]
         def ans(x):
-            bottom=individual_perform(post)(x)
+            bottom= individual_perform(post)(x)
+            top= individual_perform(pre)(x)
             if bottom==0:
                 disconts.append(x)
                 print('Discontinuity found: x =',x)
-                return 1000000.0
+                if top==0:
+                    return 0.
+                else:
+                    return 1000000.0
             else:
-                return individual_perform(pre)(x)/bottom
+                return top/bottom
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
@@ -185,11 +189,15 @@ def individual_deriv(equ):
         post= equ[sym_loci+1:]
         def ans(x):
             bottom= (individual_perform(post)(x))**2
+            top= ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))
             if bottom==0:
                 nondifferens.append(x)
                 print('Nondifferentiability found: x =',x)
-                return 1000000.0
-            return ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))/bottom
+                if top==0:
+                    return 0
+                else:
+                    return 1000000.0
+            return top/bottom
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
         pre= equ[:sym_loci]
@@ -523,9 +531,6 @@ INCstart=None
 DECstart=None
 INCend=None
 DECend=None
-
-print(inc_dec)
-
 for x in sorted(inc_dec):
     if inc_dec[x][3:]=='MIN':
         INCstart=x
@@ -561,9 +566,105 @@ for x in intervals:
         INCresp+='('+str(x[0])+', '+str(x[1])+') U '
     elif intervals[x]=='Inc_Rend':
         INCresp+='('+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Dec_Lend':
+        DECresp+='['+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Dec_clos':
+        DECresp+='['+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Dec_open':
+        DECresp+='('+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Dec_Rend':
+        DECresp+='('+str(x[0])+', '+str(x[1])+'] U '
+if INCresp=='Increasing at x = ':
+    INCresp='Never increasing on interval...'
+if DECresp=='Decreasing at x = ':
+    DECresp='Never decreasing on interval...'
+EXTMAXresp='Extrema: Maximums at x = '
+EXTMINresp='         Minimums at x = '
+for x in inc_dec:
+    if inc_dec[x][3:]=='MAX':
+        EXTMAXresp+=str(x)
+        if inc_dec[x][:3]=='abs':
+            EXTMAXresp+='(absolute), '
+        else:
+            EXTMAXresp+=', '
+    if inc_dec[x][3:]=='MIN':
+        EXTMINresp+=str(x)
+        if inc_dec[x][:3]=='abs':
+            EXTMINresp+='(absolute), '
+        else:
+            EXTMINresp+=', '
 
+#now concavity
+CFintervals={}
+CUPstart=None
+FROstart=None
+CUPend=None
+FROend=None
+
+print(cup_frown)
+
+for x in sorted(inc_dec):
+    if inc_dec[x][3:]=='MIN':
+        INCstart=x
+        DECend=x
+        if DECstart!=None:
+            intervals[(DECstart,DECend)]='Dec'
+            DECstart=None
+    elif inc_dec[x][3:]=='MAX':
+        INCend=x
+        DECstart=x
+        if INCstart!=None:
+            intervals[(INCstart,INCend)]='Inc'
+            INCstart=None
+
+CUPresp='Concave up at x = '
+FROresp='Concave down at x = ''''
+for x in intervals:
+    if intervals[x]=='Inc_Lend':
+        INCresp+='['+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Inc_clos':
+        INCresp+='['+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Inc_open':
+        INCresp+='('+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Inc_Rend':
+        INCresp+='('+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Dec_Lend':
+        DECresp+='['+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Dec_clos':
+        DECresp+='['+str(x[0])+', '+str(x[1])+'] U '
+    elif intervals[x]=='Dec_open':
+        DECresp+='('+str(x[0])+', '+str(x[1])+') U '
+    elif intervals[x]=='Dec_Rend':
+        DECresp+='('+str(x[0])+', '+str(x[1])+'] U '
+if INCresp=='Increasing at x = ':
+    INCresp='Never increasing on interval...'
+if DECresp=='Decreasing at x = ':
+    DECresp='Never decreasing on interval...'
+EXTMAXresp='Extrema: Maximums at x = '
+EXTMINresp='         Minimums at x = '
+for x in inc_dec:
+    if inc_dec[x][3:]=='MAX':
+        EXTMAXresp+=str(x)
+        if inc_dec[x][:3]=='abs':
+            EXTMAXresp+='(absolute), '
+        else:
+            EXTMAXresp+=', '
+    if inc_dec[x][3:]=='MIN':
+        EXTMINresp+=str(x)
+        if inc_dec[x][:3]=='abs':
+            EXTMINresp+='(absolute), '
+        else:
+            EXTMINresp+=', '
+'''
 print('')
 print(INCresp[:-3])
+print(DECresp[:-3])
+print(EXTMAXresp[:-2])
+print(EXTMINresp[:-2])
 
+#check=eval(input('Final thing? '))
+#print(check)
+
+print('')
 print('Discontinuous at x =',disconts)
 print('Nondifferentiable at x =',nondifferens)
