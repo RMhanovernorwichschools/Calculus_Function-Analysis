@@ -528,9 +528,9 @@ abs_max=inc_dec_details[max(inc_dec_details,key=inc_dec_details.get)]
 abs_min=inc_dec_details[min(inc_dec_details,key=inc_dec_details.get)]
 
 for x in inc_dec:
-    if func_1.perform(x)==abs_max:
+    if inc_dec_details[x]>(abs_max-0.001):
         inc_dec[x]='absMAX'
-    elif func_1.perform(x)==abs_min:
+    elif inc_dec_details[x]<(abs_min+0.001):
         inc_dec[x]='absMIN'
 
 intervals={}
@@ -547,23 +547,23 @@ for x in sorted(inc_dec):
         INCstart=x
         DECend=x
         if DECstart!=None:
-            intervals[(DECstart,DECend)]='Dec'
+            intervals[(round(DECstart,8),round(DECend,8))]='Dec'
             DECstart=None
     elif inc_dec[x][3:]=='MAX':
         INCend=x
         DECstart=x
         if INCstart!=None:
-            intervals[(INCstart,INCend)]='Inc'
+            intervals[(round(INCstart,8),round(INCend,8))]='Inc'
             INCstart=None
     elif inc_dec[x]=='discont':
         if INCstart!=None:
             INCend=x
-            intervals[(INCstart,INCend)]='Inc'
+            intervals[(round(INCstart,8),round(INCend,8))]='Inc'
             INCstart=x
             INCend=None
         elif DECstart!=None:
             DECend=x
-            intervals[(DECstart,DECend)]='Dec'
+            intervals[(round(DECstart,8),round(DECend,8))]='Dec'
             DECstart=x
             DECend=None
 
@@ -635,22 +635,22 @@ for x in sorted(cup_frown):
     elif cup_frown[x][0:3]=='END' and interv_start==False:
         if FROstart!=None:
             FROend=x
-            CFintervals[(FROstart,FROend)]='Down'
+            CFintervals[(round(FROstart,8),round(FROend,8))]='Down'
         elif CUPstart!=None:
             CUPend=x
-            CFintervals[(CUPstart,CUPend)]='Up'
+            CFintervals[(round(CUPstart,8),round(CUPend,8))]='Up'
     else:
         if not(x in set(rems)):
-            INFresp+=str(x)+', '
+            INFresp+=str(round(x,8))+', '
         if FROstart!=None:
             FROend=x
-            CFintervals[(FROstart,FROend)]='Down'
+            CFintervals[(round(FROstart,8),round(FROend,8))]='Down'
             FROstart=None
             FROend=None
             CUPstart=x
         elif CUPstart!=None:
             CUPend=x
-            CFintervals[(CUPstart,CUPend)]='Up'
+            CFintervals[(round(CUPstart,8),round(CUPend,8))]='Up'
             CUPstart=None
             CUPend=None
             FROstart=x
@@ -676,13 +676,13 @@ EXTMAXresp='Extrema: Maximums at x = '
 EXTMINresp='         Minimums at x = '
 for x in inc_dec:
     if inc_dec[x][3:]=='MAX':
-        EXTMAXresp+=str(x)
+        EXTMAXresp+=str(round(x,8))
         if inc_dec[x][:3]=='abs':
             EXTMAXresp+='(absolute), '
         else:
             EXTMAXresp+=', '
     if inc_dec[x][3:]=='MIN':
-        EXTMINresp+=str(x)
+        EXTMINresp+=str(round(x,8))
         if inc_dec[x][:3]=='abs':
             EXTMINresp+='(absolute), '
         else:
@@ -700,10 +700,6 @@ print('')
 print(CUPresp[:-3])
 print(FROresp[:-3])
 print(INFresp[:-2])
-
-
-check=eval(input('Final thing? '))
-print(check)
 
 print('')
 print('Discontinuous at x =',disconts)
