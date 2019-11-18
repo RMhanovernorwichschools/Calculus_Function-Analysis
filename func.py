@@ -44,10 +44,7 @@ def individual_perform(equ):
             top= individual_perform(pre)(x)
             if bottom==0:
                 disconts.append(x)
-                if top==0:
-                    return 0.
-                else:
-                    return 1000000.0
+                return top*100000000.0
             else:
                 return top/bottom
     elif find_loci(equ,'^')!=False:
@@ -69,28 +66,28 @@ def individual_perform(equ):
         def ans(x):
             if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return 1000000.0
+                return math.sin(individual_perform(contents)(x))*100000000.0
             return math.tan(individual_perform(contents)(x))
     elif equ[:3]=='csc':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return 1000000.0
+                return ((x-math.pi)*-1/abs(x-math.pi))*100000000.0
             return 1/math.sin(individual_perform(contents)(x))
     elif equ[:3]=='sec':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return 1000000.0
+                return ((x-math.pi/2)*-1/abs(x-math.pi/2))*100000000.0
             return 1/math.cos(individual_perform(contents)(x))
     elif equ[:3]=='cot':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return 1000000.0
+                return math.cos(individual_perform(contents)(x))*100000000.0
             return 1/math.tan(individual_perform(contents)(x))
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
@@ -100,7 +97,7 @@ def individual_perform(equ):
             if (individual_perform(contents)(x))<0:
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
-                return 1000000.0
+                return -100000000.0
             else:
                 return math.log(individual_perform(contents)(x))/math.log(individual_perform(base)(x))
     elif equ=='e':
