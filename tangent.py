@@ -10,6 +10,7 @@ class Function:
     def perform(self, num):
         return individual_perform(self.eq)(num)
 
+#SEGMENT A
 def individual_perform(equ):
     if all_in_paren(equ):
         return individual_perform(equ[1:-1])
@@ -158,6 +159,7 @@ def individual_perform(equ):
             return x
     return ans
 
+#SEGMENT B
 def individual_deriv(equ):
     if all_in_paren(equ):
         return individual_deriv(equ[1:-1])
@@ -438,6 +440,7 @@ a_val=eval(a_str)
 multer=individual_deriv(func_str)(a_val)
 adder=individual_perform(func_str)(a_val)
 
+#SEGMENT tA
 print('')
 N_multer=0
 N_flag=False
