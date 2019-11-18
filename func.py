@@ -9,7 +9,6 @@ class Function:
         
 disconts=[]
 nondifferens=[]
-            
 
 def individual_perform(equ):
     if all_in_paren(equ):
