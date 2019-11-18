@@ -10,6 +10,7 @@ class Function:
 disconts=[]
 nondifferens=[]
 
+#SEGMENT A
 def individual_perform(equ):
     if all_in_paren(equ):
         return individual_perform(equ[1:-1])
@@ -153,6 +154,7 @@ def individual_perform(equ):
             return x
     return ans
 
+#SEGMENT B
 def individual_deriv(equ):
     if all_in_paren(equ):
         return individual_deriv(equ[1:-1])
@@ -400,28 +402,11 @@ def near_zero(num, sensitivity):
     else:
         return False
 
-'''def complex_func_reader(string):
-    pieces=[]
-    split_loci=[-1]
-    inside_paren=0
-    for x in range(len(string)):
-        if string[x]=='+' and inside_paren<1:
-            split_loci.append(x)
-        elif string[x]=='(':
-            inside_paren+=1
-        elif string[x]==')':
-            inside_paren-=1
-    split_loci.append(len(string))
-    for x in range(len(split_loci)-1):
-        piece=string[split_loci[x]+1:split_loci[x+1]]
-        pieces.append(piece)
-    return pieces'''
-    
+#SEGMENT fA
 def NUMERICALderiv(func, num):
     first= func(num+0.00000000001)
     second= func(num-0.00000000001)
     return (first-second)/0.00000000002
-    
     
 func_str = input ("     Input the function: ")
 func_str=filter(func_str, [' '])
@@ -443,6 +428,7 @@ included_values.append(interval_end)
 func_1=Function(func_str)
 deriv_1=individual_deriv(func_str)
 
+#SEGMENT fB
 values={}
 inc_dec={}
 cup_frown={}
