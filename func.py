@@ -17,6 +17,13 @@ def cosmul(x):
         return 1
     else:
         return 0
+def sinmul(x):
+    if math.sin(x)<0:
+        return -1
+    elif math.sin(x)>0:
+        return 1
+    else:
+        return 0
 
 #SEGMENT A
 def individual_perform(equ):
@@ -81,14 +88,14 @@ def individual_perform(equ):
         def ans(x):
             if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return ((x-math.pi)*-1/abs(x-math.pi))*99999999999999999999999999.9
+                return (sinmul(x))*99999999999999999999999999.9
             return 1/math.sin(individual_perform(contents)(x))
     elif equ[:3]=='sec':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return ((x-math.pi/2)*-1/abs(x-math.pi/2))*99999999999999999999999999.9
+                return cosmul(x)*99999999999999999999999999.9
             return 1/math.cos(individual_perform(contents)(x))
     elif equ[:3]=='cot':
         contents=equ[3:]
@@ -233,13 +240,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
+                    return 99999999999999999999999999.9*sinmul(x)
                 return 1/((math.cos(individual_perform(contents)(x)))**2)
         else:
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
+                    return 99999999999999999999999999.9*sinmul(x)
                 return individual_deriv(contents)(x)*1/((math.cos(individual_perform(contents)(x)))**2)
     elif equ[:3]=='csc':
         contents=equ[3:]
@@ -261,13 +268,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
+                    return 99999999999999999999999999.9*sinmul(x)
                 return (math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
         else:
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
+                    return 99999999999999999999999999.9*sinmul(x)
                 return individual_deriv(contents)(x)*(math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
     elif equ[:3]=='cot':
         contents=equ[3:]
