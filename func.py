@@ -10,6 +10,14 @@ class Function:
 disconts=[]
 nondifferens=[]
 
+def cosmul(x):
+    if math.cos(x)<0:
+        return -1
+    elif math.cos(x)>0:
+        return 1
+    else:
+        return 0
+
 #SEGMENT A
 def individual_perform(equ):
     if all_in_paren(equ):
@@ -44,7 +52,7 @@ def individual_perform(equ):
             top= individual_perform(pre)(x)
             if bottom==0:
                 disconts.append(x)
-                return top*100000000.0
+                return top*99999999999999999999999999.9
             else:
                 return top/bottom
     elif find_loci(equ,'^')!=False:
@@ -66,28 +74,28 @@ def individual_perform(equ):
         def ans(x):
             if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return math.sin(individual_perform(contents)(x))*100000000.0
+                return math.sin(individual_perform(contents)(x))*99999999999999999999999999.9
             return math.tan(individual_perform(contents)(x))
     elif equ[:3]=='csc':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return ((x-math.pi)*-1/abs(x-math.pi))*100000000.0
+                return ((x-math.pi)*-1/abs(x-math.pi))*99999999999999999999999999.9
             return 1/math.sin(individual_perform(contents)(x))
     elif equ[:3]=='sec':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.cos(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return ((x-math.pi/2)*-1/abs(x-math.pi/2))*100000000.0
+                return ((x-math.pi/2)*-1/abs(x-math.pi/2))*99999999999999999999999999.9
             return 1/math.cos(individual_perform(contents)(x))
     elif equ[:3]=='cot':
         contents=equ[3:]
         def ans(x):
             if near_zero(math.sin(individual_perform(contents)(x)),2.5):
                 disconts.append(x)
-                return math.cos(individual_perform(contents)(x))*100000000.0
+                return math.cos(individual_perform(contents)(x))*99999999999999999999999999.9
             return 1/math.tan(individual_perform(contents)(x))
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
@@ -97,7 +105,7 @@ def individual_perform(equ):
             if (individual_perform(contents)(x))<0:
                 disconts.append(x)
                 print('Discontinuity found: x =', x)
-                return -100000000.0
+                return -99999999999999999999999999.9
             else:
                 return math.log(individual_perform(contents)(x))/math.log(individual_perform(base)(x))
     elif equ=='e':
@@ -185,10 +193,7 @@ def individual_deriv(equ):
             top= ((individual_perform(post)(x)*individual_deriv(pre)(x))-(individual_deriv(post)(x)*individual_perform(pre)(x)))
             if bottom==0:
                 nondifferens.append(x)
-                if top==0:
-                    return 0
-                else:
-                    return 1000000.0
+                return 99999999999999999999999999.9*top
             return top/bottom
     elif find_loci(equ,'^')!=False:
         sym_loci=find_loci(equ, '^')
@@ -198,13 +203,13 @@ def individual_deriv(equ):
             def ans(x):
                 if (individual_perform(post)(x)-1)<0 and individual_perform(pre)(x)==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*(individual_perform(post)(x)-1)
                 return individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
         else:
             def ans(x):
                 if (individual_perform(post)(x)-1)<0 and individual_perform(pre)(x)==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*(individual_perform(post)(x)-1)
                 return math.log(individual_perform(pre)(x))*individual_deriv(post)(x)*individual_perform(post)(x)*individual_perform(pre)(x)**(individual_perform(post)(x)-1)
     elif equ[:3]=='sin':
         contents=equ[3:]
@@ -228,13 +233,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
                 return 1/((math.cos(individual_perform(contents)(x)))**2)
         else:
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
                 return individual_deriv(contents)(x)*1/((math.cos(individual_perform(contents)(x)))**2)
     elif equ[:3]=='csc':
         contents=equ[3:]
@@ -242,13 +247,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.sin(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*cosmul(x)*-1
                 return (-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
         else:
             def ans(x):
                 if math.sin(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*cosmul(x)*-1
                 return individual_deriv(contents)(x)*(-1)*(math.cos(individual_perform(contents)(x)))*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='sec':
         contents=equ[3:]
@@ -256,13 +261,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
                 return (math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
         else:
             def ans(x):
                 if math.cos(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*((x-math.pi)*-1/abs(x-math.pi))
                 return individual_deriv(contents)(x)*(math.sin(individual_perform(contents)(x)))*(1/math.cos(individual_perform(contents)(x))**2)
     elif equ[:3]=='cot':
         contents=equ[3:]
@@ -270,13 +275,13 @@ def individual_deriv(equ):
             def ans(x):
                 if math.sin(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*cosmul(x)*-1
                 return (-1)*(1/math.sin(individual_perform(contents)(x))**2)
         else:
             def ans(x):
                 if math.sin(individual_perform(contents)(x))==0:
                     nondifferens.append(x)
-                    return 1000000.0
+                    return 99999999999999999999999999.9*cosmul(x)*-1
                 return individual_deriv(contents)(x)*(-1)*(1/math.sin(individual_perform(contents)(x))**2)
     elif equ[:3]=='log':
         end=find_loci(equ,'_')
@@ -497,8 +502,16 @@ DECstart=None
 INCend=None
 DECend=None
 
+def numerical_check(num,list):
+    for x in list:
+        if num==x:
+            return False
+    return True
+
 for x in disconts:
-    inc_dec[x]='discont'
+    if numerical_check(x,set(inc_dec)):
+        inc_dec[x]='discont'
+
 
 for x in sorted(inc_dec):
     if inc_dec[x][3:]=='MIN':
@@ -526,18 +539,18 @@ for x in sorted(inc_dec):
             DECend=None
 
 for x in intervals:
-    if x[0] in set(disconts) and x[1] in set(disconts):
+    if not(numerical_check(x[0],disconts)) and not(numerical_check(x[1],disconts)):
         intervals[x]+='_open'
-    elif x[0] in set(disconts) and not(x[1] in set(disconts)):
+    elif not(numerical_check(x[0],disconts)) and (numerical_check(x[1],disconts)):
         intervals[x]+='_Rend'
-    elif not(x[0] in set(disconts) or x[1] in set(disconts)):
+    elif (numerical_check(x[0],disconts)) and (numerical_check(x[1],disconts)):
         intervals[x]+='_clos'
     else:
         intervals[x]+='_Lend'
         
 INCresp='Increasing at x = '
 DECresp='Decreasing at x = '
-for x in intervals:
+for x in sorted(intervals):
     if intervals[x]=='Inc_Lend':
         INCresp+='['+str(x[0])+', '+str(x[1])+') U '
     elif intervals[x]=='Inc_clos':
@@ -560,16 +573,17 @@ if DECresp=='Decreasing at x = ':
     DECresp='Never decreasing on interval...'
 EXTMAXresp='Extrema: Maximums at x = '
 EXTMINresp='         Minimums at x = '
+
 for x in inc_dec:
     if inc_dec[x][3:]=='MAX':
         EXTMAXresp+=str(x)
-        if inc_dec[x][:3]=='abs':
+        if inc_dec[x][:3]=='abs' and numerical_check(x, disconts):
             EXTMAXresp+='(absolute), '
         else:
             EXTMAXresp+=', '
     if inc_dec[x][3:]=='MIN':
         EXTMINresp+=str(x)
-        if inc_dec[x][:3]=='abs':
+        if inc_dec[x][:3]=='abs' and numerical_check(x, disconts):
             EXTMINresp+='(absolute), '
         else:
             EXTMINresp+=', '
@@ -597,6 +611,14 @@ for x in sorted(cup_frown):
         elif CUPstart!=None:
             CUPend=x
             CFintervals[(round(CUPstart,8),round(CUPend,8))]='Up'
+    elif interv_start==True and cup_frown[x][0:3]=='INF':
+        if cup_frown[x][4]=='n':
+            CUPstart=x
+        elif cup_frown[x][4]=='p':
+            FROstart=x
+        interv_start=False
+        if not(x in set(rems)):
+            INFresp+=str(round(x,8))+', '
     else:
         if not(x in set(rems)):
             INFresp+=str(round(x,8))+', '
@@ -615,7 +637,7 @@ for x in sorted(cup_frown):
 
 CUPresp='Concave up at x = '
 FROresp='Concave down at x = '
-for x in CFintervals:
+for x in sorted(CFintervals):
     if CFintervals[x]=='Up':
         CUPresp+='('+str(x[0])+', '+str(x[1])+') U '
     elif CFintervals[x]=='Down':
@@ -629,22 +651,6 @@ if INCresp=='Increasing at x = ':
     INCresp='Never increasing on interval...'
 if DECresp=='Decreasing at x = ':
     DECresp='Never decreasing on interval...'
-
-EXTMAXresp='Extrema: Maximums at x = '
-EXTMINresp='         Minimums at x = '
-for x in inc_dec:
-    if inc_dec[x][3:]=='MAX':
-        EXTMAXresp+=str(round(x,8))
-        if inc_dec[x][:3]=='abs':
-            EXTMAXresp+='(absolute), '
-        else:
-            EXTMAXresp+=', '
-    if inc_dec[x][3:]=='MIN':
-        EXTMINresp+=str(round(x,8))
-        if inc_dec[x][:3]=='abs':
-            EXTMINresp+='(absolute), '
-        else:
-            EXTMINresp+=', '
 
 if INFresp=='Points of Inflection at x = ':
     INFresp='No points of inflection..'
@@ -670,5 +676,21 @@ print(FROresp[:-3])
 print(INFresp[:-2])
 
 print('')
-print('Discontinuous at x =',disconts)
-print('Nondifferentiable at x =',nondifferens)
+DISCresp = 'Discontinuous at x = '
+answered=[]
+for x in disconts:
+    if numerical_check(x,answered):
+        DISCresp+=str(x)+', '
+        answered.append(x)
+if DISCresp=='Discontinuous at x = ':
+    DISCresp='No discontinuities in interval..'
+print(DISCresp[:-2])
+DISCresp = 'Nondifferentiable at x = '
+answered=[]
+for x in nondifferens:
+    if numerical_check(x,answered):
+        DISCresp+=str(x)+', '
+        answered.append(x)
+if DISCresp=='Nondifferentiable at x = ':
+    DISCresp='All differentiable in interval..'
+print(DISCresp[:-2])
